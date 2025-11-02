@@ -1,329 +1,278 @@
-// Base CASE FLOW definition
+﻿// ----- 1) master flow: this is the "family tree" of the case -----
 const CASE_FLOW = {
-  id: 'arrested',
-  label: 'Arrested / Booked',
+  id: "arrested",
+  label: "Arrested / Booked",
   children: [
     {
-      id: 'arraignment',
-      label: 'Arraignment / First Appearance',
+      id: "arraignment",
+      label: "Arraignment / First Appearance",
       children: [
-        { id: 'bail_granted', label: 'Bail Granted / Released' },
-        { id: 'bail_denied', label: 'Bail Denied / Remain in Custody' },
-        { id: 'adjourned', label: 'Adjourned / New Date' },
+        { id: "bail_granted", label: "Bail Granted / Released" },
+        { id: "bail_denied", label: "Bail Denied / Remain in Custody" },
+        { id: "adjourned", label: "Adjourned / New Date" },
         {
-          id: 'plea',
-          label: 'Plea Deal',
+          id: "plea",
+          label: "Plea Deal",
           children: [
-            { id: 'probation', label: 'Probation / Supervision' },
-            { id: 'state_sentence', label: 'Sentenced to State DOC' }
-          ]
+            { id: "probation", label: "Probation / Supervision" },
+            { id: "state_sentence", label: "Sentenced to State DOC" },
+          ],
         },
-        { id: 'trial', label: 'Trial' }
-      ]
-    }
-  ]
+        { id: "trial", label: "Trial" },
+      ],
+    },
+  ],
 };
 
-const LS_KEY = "family-case-tree-cases";
-const LS_COMPACT = "family-case-tree-compact";
+// ----- 2) get DOM elements -----
+const caseForm = document.getElementById("caseForm");
+const caseList = document.getElementById("caseList");
+const currentStageSelect = document.getElementById("currentStage");
+const caseMeta = document.getElementById("caseMeta");
+const treeContainer = document.getElementById("treeContainer");
+const compactToggle = document.getElementById("compactToggle");
+
+const STORAGE_KEY = "family-case-tree-cases";
+
 let cases = [];
-let currentCaseIndex = -1;
+let activeIndex = -1;
 
-// Traverse the flow tree
-function traverseFlow(node, cb, depth = 0) {
-  cb(node, depth);
-  if (Array.isArray(node.children)) {
-    node.children.forEach(child => traverseFlow(child, cb, depth + 1));
+// ----- 3) turn the tree into a flat list for the dropdown -----
+function flattenFlow(node, acc = []) {
+  acc.push({ id: node.id, label: node.label });
+  if (node.children && node.children.length) {
+    node.children.forEach((child) => flattenFlow(child, acc));
   }
+  return acc;
 }
 
-// Build stage options from flow
-function buildStageOptions(flow, selectElement) {
-  // Clear existing
-  while (selectElement.firstChild) selectElement.removeChild(selectElement.firstChild);
-
-  const fr = document.createDocumentFragment();
-  traverseFlow(flow, (node, depth) => {
-    const opt = document.createElement('option');
-    const indent = '— '.repeat(depth);
-    opt.value = node.id;
-    opt.textContent = `${indent}${node.label}`;
-    fr.appendChild(opt);
+function populateStageDropdown() {
+  const stages = flattenFlow(CASE_FLOW);
+  currentStageSelect.innerHTML = "";
+  stages.forEach((stage) => {
+    const opt = document.createElement("option");
+    opt.value = stage.id;
+    opt.textContent = stage.label;
+    currentStageSelect.appendChild(opt);
   });
-  selectElement.appendChild(fr);
 }
 
-// Build the nested UL/LI for the tree
-function renderTree(container, flow, currentStageId) {
-  container.innerHTML = '';
+// ----- 4) build the tree UI -----
+function buildTreeUL(node, currentStageId, compact) {
+  const ul = document.createElement("ul");
+  ul.className = compact ? "tree-ul tree-ul--compact" : "tree-ul";
 
-  function buildNode(node) {
-    const li = document.createElement('li');
+  const li = document.createElement("li");
+  const box = document.createElement("div");
+  box.className = "tree-node";
+  box.textContent = node.label;
 
-    const box = document.createElement('div');
-    box.className = 'node' + (node.id === currentStageId ? ' node--active' : '');
-    const title = document.createElement('p');
-    title.className = 'node__label';
-    title.textContent = node.label;
-    const meta = document.createElement('p');
-    meta.className = 'node__meta';
-    meta.textContent = `Stage ID: ${node.id}`;
-
-    box.appendChild(title);
-    box.appendChild(meta);
-    li.appendChild(box);
-
-    if (node.children && node.children.length > 0) {
-      const ul = document.createElement('ul');
-      node.children.forEach(child => ul.appendChild(buildNode(child)));
-      li.appendChild(ul);
-    }
-    return li;
+  if (node.id === currentStageId) {
+    box.classList.add("tree-node--active");
   }
 
-  const rootUl = document.createElement('ul');
-  rootUl.appendChild(buildNode(flow));
-  container.appendChild(rootUl);
+  li.appendChild(box);
+
+  if (node.children && node.children.length) {
+    const childrenUL = document.createElement("ul");
+    childrenUL.className = compact ? "tree-ul tree-ul--compact" : "tree-ul";
+
+    node.children.forEach((child) => {
+      const childLI = buildTreeUL(
+        child,
+        currentStageId,
+        compact
+      ).firstElementChild;
+      childrenUL.appendChild(childLI);
+    });
+
+    li.appendChild(childrenUL);
+  }
+
+  ul.appendChild(li);
+  return ul;
 }
 
-// Storage helpers
+function renderTree(container, flow, currentStageId, compact = false) {
+  container.innerHTML = "";
+  const ul = buildTreeUL(flow, currentStageId, compact);
+  container.appendChild(ul);
+}
+
+// Scale the tree to fit the available width in the scroll container
+function fitTreeToWidth() {
+  const scrollEl = document.getElementById("treeScroll");
+  const treeEl = document.getElementById("treeContainer");
+  if (!scrollEl || !treeEl) return;
+  // reset any previous transform before measuring
+  treeEl.style.transform = "";
+  treeEl.style.transformOrigin = "top left";
+
+  const available = scrollEl.clientWidth - 16; // account for inner padding
+  const content = treeEl.scrollWidth;
+  if (content > available && available > 0) {
+    const scale = Math.max(available / content, 0.65);
+    treeEl.style.transform = `scale(${scale})`;
+  }
+}
+
+// ----- 5) storage helpers -----
 function loadCases() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
   try {
-    const raw = localStorage.getItem(LS_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    if (Array.isArray(parsed)) return parsed;
-  } catch (_) {}
-  return [];
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
 }
 
 function saveCases() {
-  localStorage.setItem(LS_KEY, JSON.stringify(cases));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
 }
 
-// UI helpers
-function clearForm() {
-  document.getElementById('caseIndex').value = -1;
-  document.getElementById('fullName').value = '';
-  document.getElementById('dob').value = '';
-  document.getElementById('custodyType').value = 'county';
-  document.getElementById('facility').value = '';
-  document.getElementById('nextCourtDate').value = '';
-  document.getElementById('currentStage').value = CASE_FLOW.id;
-}
-
-function fillFormFromCase(c) {
-  document.getElementById('fullName').value = c.fullName || '';
-  document.getElementById('dob').value = c.dob || '';
-  document.getElementById('custodyType').value = c.custodyType || 'county';
-  document.getElementById('facility').value = c.facility || '';
-  document.getElementById('nextCourtDate').value = c.nextCourtDate || '';
-  document.getElementById('currentStage').value = c.currentStage || CASE_FLOW.id;
-}
-
-function activeCase() {
-  return cases[currentCaseIndex] || null;
-}
-
+// ----- 6) render the list on the left -----
 function renderCaseList() {
-  const list = document.getElementById('caseList');
-  list.innerHTML = '';
-  const fr = document.createDocumentFragment();
-
+  caseList.innerHTML = "";
   cases.forEach((c, idx) => {
-    const li = document.createElement('li');
-    li.className = 'case-list__item' + (idx === currentCaseIndex ? ' case-list__item--active' : '');
-    li.tabIndex = 0;
-    li.setAttribute('role', 'button');
-    li.setAttribute('aria-label', `Load case ${c.fullName}`);
-
-    const avatar = document.createElement('img');
-    avatar.className = 'case-avatar';
-    // Use a reliable Wikimedia placeholder
-    avatar.src = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';
-    avatar.alt = 'Case avatar';
-    avatar.referrerPolicy = 'no-referrer';
-
-    const text = document.createElement('div');
-    text.className = 'case-text';
-
-    const name = document.createElement('div');
-    name.className = 'case-name';
-    name.textContent = c.fullName;
-
-    const meta = document.createElement('div');
-    meta.className = 'case-meta-small';
-    const facility = c.facility ? ` • ${c.facility}` : '';
-    const nextDate = c.nextCourtDate ? ` • Next: ${c.nextCourtDate}` : '';
-    meta.textContent = `${c.custodyType.toUpperCase()}${facility}${nextDate}`;
-
-    text.appendChild(name);
-    text.appendChild(meta);
-
-    li.appendChild(avatar);
-    li.appendChild(text);
-
-    li.addEventListener('click', () => {
-      currentCaseIndex = idx;
-      document.getElementById('caseIndex').value = idx;
-      fillFormFromCase(cases[idx]);
-      updateViewer();
-      renderCaseList();
+    const li = document.createElement("li");
+    li.className =
+      idx === activeIndex
+        ? "case-list__item case-list__item--active"
+        : "case-list__item";
+    li.innerHTML = `
+      <img src="./images/Gavel-icon.png" alt="" class="case-list__icon" onerror="this.style.display='none'">
+      <div>
+        <div class="case-list__name">${c.fullName}</div>
+        <div class="case-list__sub">${c.facility || ""}</div>
+      </div>
+    `;
+    li.addEventListener("click", () => {
+      setActiveCase(idx);
     });
-    li.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') li.click();
-    });
-
-    fr.appendChild(li);
+    caseList.appendChild(li);
   });
-
-  list.appendChild(fr);
 }
 
-function updateViewer() {
-  const meta = document.getElementById('caseMeta');
-  const container = document.getElementById('treeContainer');
-  const deleteBtn = document.getElementById('deleteCaseBtn');
-  const c = activeCase();
+// ----- 7) load a case into the form + tree -----
+function setActiveCase(idx) {
+  activeIndex = idx;
+  renderCaseList();
 
+  const c = cases[idx];
   if (!c) {
-    meta.textContent = 'No case loaded.';
-    container.innerHTML = '';
-    if (deleteBtn) deleteBtn.disabled = true;
+    caseMeta.textContent = "No case loaded.";
+    treeContainer.innerHTML = "";
     return;
   }
 
-  const namePart = c.fullName || 'Unknown';
-  const facilityPart = c.facility ? ` • ${c.facility}` : '';
-  const courtPart = c.nextCourtDate ? ` • Next Court: ${c.nextCourtDate}` : '';
-  meta.textContent = `${namePart}${facilityPart}${courtPart}`;
+  document.getElementById("caseIndex").value = idx;
+  document.getElementById("fullName").value = c.fullName;
+  document.getElementById("dob").value = c.dob;
+  document.getElementById("custodyType").value = c.custodyType;
+  document.getElementById("facility").value = c.facility;
+  document.getElementById("nextCourtDate").value = c.nextCourtDate || "";
+  currentStageSelect.value = c.currentStage || CASE_FLOW.id;
 
-  renderTree(container, CASE_FLOW, c.currentStage || CASE_FLOW.id);
-  if (deleteBtn) deleteBtn.disabled = false;
+  caseMeta.textContent = `${c.fullName} • ${
+    c.facility || "No facility"
+  } • Next court: ${c.nextCourtDate || "N/A"}`;
+
+  renderTree(treeContainer, CASE_FLOW, c.currentStage, compactToggle.checked);
+  fitTreeToWidth();
 }
 
-// Init and event listeners
-document.addEventListener('DOMContentLoaded', () => {
-  const stageSelect = document.getElementById('currentStage');
-  const compactToggle = document.getElementById('compactToggle');
-  const treeContainer = document.getElementById('treeContainer');
-  const deleteBtn = document.getElementById('deleteCaseBtn');
-  buildStageOptions(CASE_FLOW, stageSelect);
+// ----- 8) form submit -----
+caseForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-  cases = loadCases();
+  const idx = parseInt(document.getElementById("caseIndex").value, 10);
+  const newCase = {
+    fullName: document.getElementById("fullName").value,
+    dob: document.getElementById("dob").value,
+    custodyType: document.getElementById("custodyType").value,
+    facility: document.getElementById("facility").value,
+    nextCourtDate: document.getElementById("nextCourtDate").value,
+    currentStage: document.getElementById("currentStage").value,
+  };
 
-  // If none exist, create a sample case
-  if (!cases.length) {
-    cases.push({
-      fullName: 'Sample Inmate',
-      dob: '1990-01-01',
-      custodyType: 'county',
-      facility: 'Bergen County Jail',
-      nextCourtDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString().slice(0, 10),
-      currentStage: 'arraignment'
-    });
-    saveCases();
+  if (!Number.isNaN(idx) && idx >= 0) {
+    cases[idx] = newCase;
+    activeIndex = idx;
+  } else {
+    cases.push(newCase);
+    activeIndex = cases.length - 1;
   }
 
-  currentCaseIndex = 0;
-  document.getElementById('caseIndex').value = currentCaseIndex;
-  fillFormFromCase(activeCase());
-
+  saveCases();
   renderCaseList();
-  updateViewer();
+  setActiveCase(activeIndex);
+});
 
-  // Initialize compact mode (default ON on small screens if unset)
-  try {
-    const compactPref = localStorage.getItem(LS_COMPACT);
-    let isCompact;
-    if (compactPref === null) {
-      isCompact = window.innerWidth < 900;
-      localStorage.setItem(LS_COMPACT, isCompact ? '1' : '0');
-    } else {
-      isCompact = compactPref === '1';
-    }
-    if (compactToggle) compactToggle.checked = isCompact;
-    if (isCompact && treeContainer) treeContainer.classList.add('tree--compact');
-  } catch (_) {}
+// ----- 9) new case button -----
+document.getElementById("newCaseBtn").addEventListener("click", () => {
+  document.getElementById("caseIndex").value = -1;
+  caseForm.reset();
+  currentStageSelect.value = CASE_FLOW.id;
+  caseMeta.textContent = "New case…";
+  treeContainer.innerHTML = "";
+});
 
-  // Save / Update handler
-  document.getElementById('caseForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const idx = parseInt(document.getElementById('caseIndex').value, 10);
-    const newCase = {
-      fullName: document.getElementById('fullName').value.trim(),
-      dob: document.getElementById('dob').value,
-      custodyType: document.getElementById('custodyType').value,
-      facility: document.getElementById('facility').value.trim(),
-      nextCourtDate: document.getElementById('nextCourtDate').value,
-      currentStage: document.getElementById('currentStage').value
-    };
-
-    if (!newCase.fullName) {
-      alert('Please enter a full name.');
-      return;
-    }
-
-    if (Number.isInteger(idx) && idx >= 0 && idx < cases.length) {
-      cases[idx] = newCase; // Update
-      currentCaseIndex = idx;
-    } else {
-      cases.push(newCase); // Create
-      currentCaseIndex = cases.length - 1;
-      document.getElementById('caseIndex').value = currentCaseIndex;
-    }
-
-    saveCases();
-    renderCaseList();
-    updateViewer();
-  });
-
-  // New button clears form for new case
-  document.getElementById('newCaseBtn').addEventListener('click', () => {
-    clearForm();
-    currentCaseIndex = -1;
-    renderCaseList();
-    updateViewer();
-  });
-
-  // Change stage preview live for the active case
-  stageSelect.addEventListener('change', () => {
-    const c = activeCase();
-    if (!c) return;
-    const preview = { ...c, currentStage: stageSelect.value };
-    renderTree(document.getElementById('treeContainer'), CASE_FLOW, preview.currentStage);
-  });
-
-  // Compact toggle behavior
-  if (compactToggle) {
-    compactToggle.addEventListener('change', () => {
-      const compact = compactToggle.checked;
-      if (treeContainer) {
-        treeContainer.classList.toggle('tree--compact', compact);
-      }
-      try { localStorage.setItem(LS_COMPACT, compact ? '1' : '0'); } catch (_) {}
-    });
-  }
-
-  // Delete current case
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', () => {
-      if (currentCaseIndex < 0 || currentCaseIndex >= cases.length) return;
-      const name = cases[currentCaseIndex]?.fullName || 'this case';
-      if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
-
-      cases.splice(currentCaseIndex, 1);
-      saveCases();
-
-      if (cases.length === 0) {
-        currentCaseIndex = -1;
-        clearForm();
-      } else {
-        currentCaseIndex = Math.min(currentCaseIndex, cases.length - 1);
-        document.getElementById('caseIndex').value = currentCaseIndex;
-        fillFormFromCase(activeCase());
-      }
-      renderCaseList();
-      updateViewer();
-    });
+// ----- 10) delete case button -----
+document.getElementById("deleteCaseBtn").addEventListener("click", () => {
+  if (activeIndex < 0) return;
+  cases.splice(activeIndex, 1);
+  saveCases();
+  activeIndex = cases.length ? 0 : -1;
+  renderCaseList();
+  if (activeIndex >= 0) {
+    setActiveCase(activeIndex);
+  } else {
+    caseMeta.textContent = "No case loaded.";
+    treeContainer.innerHTML = "";
   }
 });
+
+// ----- 11) compact toggle -----
+compactToggle.addEventListener("change", () => {
+  if (activeIndex < 0) return;
+  const c = cases[activeIndex];
+  renderTree(treeContainer, CASE_FLOW, c.currentStage, compactToggle.checked);
+  fitTreeToWidth();
+});
+
+// ----- 12) init -----
+function init() {
+  // fill dropdown FIRST
+  populateStageDropdown();
+
+  // load saved cases
+  cases = loadCases();
+
+  // if none, create a sample one
+  if (!cases.length) {
+    cases = [
+      {
+        fullName: "Sample Inmate",
+        dob: "1990-01-01",
+        custodyType: "county",
+        facility: "Bergen County Jail",
+        nextCourtDate: "2025-12-01",
+        currentStage: "arraignment",
+      },
+    ];
+    saveCases();
+  }
+
+  // Default to compact mode on first load (denser tree on desktop too)
+  if (compactToggle) {
+    compactToggle.checked = true;
+  }
+
+  renderCaseList();
+  setActiveCase(0);
+  window.addEventListener("resize", fitTreeToWidth);
+}
+
+init();
+

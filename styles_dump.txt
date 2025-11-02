@@ -1,5 +1,5 @@
-﻿:root {
-  --maxw: 1440px;
+:root {
+  --maxw: 1280px;
   --sidebar-w: 320px;
   --bg: #f5f7fb;
   --bg-hero: #e9f1ec;
@@ -9,22 +9,16 @@
   --brand: #284f37;
   --accent: #2f6f45;
   --border: #e5e7eb;
-  --shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow: 0 2px 4px rgba(0,0,0,.08);
   --active-bg: #eaf7ee;
   --active-border: #32a852;
 }
 
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  height: 100%;
-}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
-    "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   color: var(--text);
   background: var(--bg);
 }
@@ -47,12 +41,7 @@ body {
   align-items: center;
   gap: 12px;
 }
-.logo {
-  height: 36px;
-  width: auto;
-  border-radius: 4px;
-  object-fit: cover;
-}
+.logo { height: 36px; width: auto; border-radius: 4px; object-fit: cover; }
 .brand-name {
   font-weight: 700;
   font-size: 18px;
@@ -121,12 +110,7 @@ body {
   margin: 0 0 12px;
   font-size: 16px;
 }
-.section-icon {
-  width: 20px;
-  height: 20px;
-  object-fit: cover;
-  border-radius: 3px;
-}
+.section-icon { width: 20px; height: 20px; object-fit: cover; border-radius: 3px; }
 
 .form__row {
   display: flex;
@@ -134,10 +118,7 @@ body {
   gap: 6px;
   margin-bottom: 12px;
 }
-label {
-  font-size: 13px;
-  color: var(--muted);
-}
+label { font-size: 13px; color: var(--muted); }
 input[type="text"],
 input[type="date"],
 select {
@@ -168,22 +149,11 @@ select {
   background: var(--accent);
   color: #fff;
 }
-.btn--primary:hover {
-  filter: brightness(0.95);
-}
+.btn--primary:hover { filter: brightness(0.95); }
 .btn--secondary {
   background: #fff;
   border: 1px solid var(--border);
   color: var(--text);
-}
-/* Brand outline button (e.g., Preview) */
-.btn--outline {
-  background: #fff;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-}
-.btn--outline:hover {
-  background: var(--active-bg);
 }
 /* Danger button (Delete) */
 .btn--danger {
@@ -191,34 +161,7 @@ select {
   border: 1px solid #ef4444;
   color: #b91c1c;
 }
-.btn--danger:hover {
-  background: #fff5f5;
-}
-
-/* Local-only auth box */
-.auth {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.auth__row input {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  background: #fff;
-  color: var(--text);
-}
-.auth__actions {
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.auth__status {
-  font-size: 12px;
-  color: var(--muted);
-}
+.btn--danger:hover { background: #fff5f5; }
 
 /* Saved Cases */
 .case-list {
@@ -235,31 +178,15 @@ select {
   border-bottom: 1px dashed var(--border);
   cursor: pointer;
 }
-.case-list__item:hover {
-  background: #fafafa;
-}
-.case-list__item--active {
-  background: #f0f7f2;
-}
+.case-list__item:hover { background: #fafafa; }
+.case-list__item--active { background: #f0f7f2; }
 .case-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--border);
+  width: 28px; height: 28px; border-radius: 50%;
+  object-fit: cover; border: 1px solid var(--border);
 }
-.case-text {
-  display: flex;
-  flex-direction: column;
-}
-.case-name {
-  font-weight: 600;
-  font-size: 14px;
-}
-.case-meta-small {
-  font-size: 12px;
-  color: var(--muted);
-}
+.case-text { display: flex; flex-direction: column; }
+.case-name { font-weight: 600; font-size: 14px; }
+.case-meta-small { font-size: 12px; color: var(--muted); }
 
 /* Tree Panel */
 .tree-panel {
@@ -277,7 +204,7 @@ select {
 }
 .tree-header {
   padding: 12px 12px 8px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255,255,255,0.9);
   border-bottom: 1px solid var(--border);
 }
 .tree-header__title {
@@ -293,87 +220,45 @@ select {
 }
 .tree-scroll {
   max-height: calc(100vh - 260px);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
   padding: 16px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.85),
-    rgba(255, 255, 255, 0.85)
-  );
+  background: linear-gradient(to bottom, rgba(255,255,255,.85), rgba(255,255,255,.85));
 }
 
 /* CSS Tree pattern */
-.tree {
-  width: max-content;
-  min-width: 100%;
-}
+.tree { width: max-content; min-width: 100%; }
 
 .tree ul {
-  padding-top: 20px;
-  position: relative;
-  transition: all 0.5s;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
+  padding-top: 20px; position: relative; transition: all .5s;
+  display: flex; justify-content: center; gap: 24px;
 }
 
 .tree li {
-  list-style-type: none;
-  text-align: center;
-  position: relative;
-  padding: 20px 5px 0 5px;
-  transition: all 0.5s;
-  white-space: nowrap;
+  list-style-type: none; text-align: center; position: relative;
+  padding: 20px 5px 0 5px; transition: all .5s; white-space: nowrap;
 }
 
 /* connectors */
-.tree li::before,
-.tree li::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 50%;
-  border-top: 1px solid #ccc;
-  width: 50%;
-  height: 20px;
+.tree li::before, .tree li::after {
+  content: ''; position: absolute; top: 0; right: 50%;
+  border-top: 1px solid #ccc; width: 50%; height: 20px;
 }
 .tree li::after {
-  right: auto;
-  left: 50%;
-  border-left: 1px solid #ccc;
+  right: auto; left: 50%; border-left: 1px solid #ccc;
 }
 
-.tree li:only-child::after,
-.tree li:only-child::before {
-  display: none;
-}
+.tree li:only-child::after, .tree li:only-child::before { display: none; }
 
-.tree li:only-child {
-  padding-top: 0;
-}
+.tree li:only-child { padding-top: 0; }
 
-.tree li:first-child::before,
-.tree li:last-child::after {
-  border: 0 none;
-}
-.tree li:last-child::before {
-  border-right: 1px solid #ccc;
-  border-radius: 0 5px 0 0;
-}
-.tree li:first-child::after {
-  border-radius: 5px 0 0 0;
-}
+.tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+.tree li:last-child::before { border-right: 1px solid #ccc; border-radius: 0 5px 0 0; }
+.tree li:first-child::after { border-radius: 5px 0 0 0; }
 
 /* vertical line down to children */
 .tree ul ul::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  border-left: 1px solid #ccc;
-  width: 0;
-  height: 20px;
+  content: ''; position: absolute; top: 0; left: 50%;
+  border-left: 1px solid #ccc; width: 0; height: 20px;
 }
 
 .node {
@@ -389,78 +274,36 @@ select {
   text-align: left;
 }
 .node__label {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--text);
-  margin: 0 0 4px;
+  font-weight: 600; font-size: 13px; color: var(--text); margin: 0 0 4px;
 }
 .node__meta {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 0;
+  font-size: 12px; color: var(--muted); margin: 0;
 }
 
 .node--active {
   border-color: var(--active-border);
   background: var(--active-bg);
-  box-shadow: 0 0 0 2px rgba(50, 168, 82, 0.15), var(--shadow);
+  box-shadow: 0 0 0 2px rgba(50,168,82,0.15), var(--shadow);
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .app {
-    flex-direction: column;
-  }
-  .sidebar {
-    position: static;
-    width: 100%;
-  }
-  .tree-scroll {
-    max-height: none;
-  }
+  .app { flex-direction: column; }
+  .sidebar { position: static; width: 100%; }
+  .tree-scroll { max-height: none; }
 }
 
 /* Mobile-first tweaks */
 @media (max-width: 768px) {
-  .app {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-  }
-  .sidebar {
-    width: 100%;
-    flex: 1 1 auto;
-    position: static;
-  }
-  .tree-scroll {
-    max-height: none;
-    padding: 12px;
-    overflow-y: auto;
-  overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-  .tree-panel {
-    background-attachment: scroll;
-  }
-  .btn {
-    padding: 12px 14px;
-    font-size: 15px;
-  }
-  .case-list__item {
-    padding: 12px 8px;
-  }
-  .node {
-    min-width: 160px;
-    max-width: 220px;
-    padding: 6px 8px;
-  }
-  .node__label {
-    font-size: 12px;
-    margin-bottom: 2px;
-  }
-  .node__meta {
-    font-size: 11px;
-  }
+  .app { flex-direction: column; gap: 12px; padding: 12px; }
+  .sidebar { width: 100%; flex: 1 1 auto; position: static; }
+  .tree-scroll { max-height: none; padding: 12px; overflow: auto; -webkit-overflow-scrolling: touch; }
+  .tree-panel { background-attachment: scroll; }
+  .btn { padding: 12px 14px; font-size: 15px; }
+  .case-list__item { padding: 12px 8px; }
+  .node { min-width: 160px; max-width: 220px; padding: 6px 8px; }
+  .node__label { font-size: 12px; margin-bottom: 2px; }
+  .node__meta { font-size: 11px; }
 }
 
 /* Controls in tree header */
@@ -474,55 +317,34 @@ select {
   font-size: 13px;
   color: var(--muted);
 }
-.compact-toggle input {
-  vertical-align: middle;
-  margin-right: 6px;
-}
+.compact-toggle input { vertical-align: middle; margin-right: 6px; }
 
 /* Compact mode adjustments */
-.tree.tree--compact ul {
-  gap: 12px;
-  padding-top: 12px;
-}
-.tree.tree--compact li {
-  padding-top: 12px;
-}
-.tree.tree--compact li::before,
-.tree.tree--compact li::after {
-  height: 16px;
-}
-.tree.tree--compact ul ul::before {
-  height: 16px;
-}
+.tree.tree--compact ul { gap: 12px; padding-top: 12px; }
+.tree.tree--compact li { padding-top: 12px; }
+.tree.tree--compact li::before, .tree.tree--compact li::after { height: 16px; }
+.tree.tree--compact ul ul::before { height: 16px; }
 .tree.tree--compact .node {
   min-width: 160px;
   max-width: 220px;
   padding: 6px 8px;
 }
-.tree.tree--compact .node__label {
-  font-size: 12px;
-  margin-bottom: 2px;
-}
-.tree.tree--compact .node__meta {
-  font-size: 11px;
-}
+.tree.tree--compact .node__label { font-size: 12px; margin-bottom: 2px; }
+.tree.tree--compact .node__meta { font-size: 11px; }
 
 /* Added imagery enhancements */
 /* Ensure header can host a watermark */
-.tree-header {
-  position: relative;
-}
+.tree-header { position: relative; }
 
 /* Subtle justice watermark in the header */
 .tree-header::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 8px;
   right: 12px;
   width: 48px;
   height: 48px;
-  background: url("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Scales_of_Justice.svg/1200px-Scales_of_Justice.svg.png")
-    no-repeat center / contain;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Scales_of_Justice.svg/1200px-Scales_of_Justice.svg.png') no-repeat center / contain;
   opacity: 0.12;
   pointer-events: none;
 }
@@ -537,23 +359,4 @@ select {
   display: block;
   margin: 6px auto 12px;
 }
-
-/* keep gavel small in the saved-cases list */
-.case-list__icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  flex-shrink: 0;
-  margin-right: 0.5rem;
-}
-
-/* make sure the whole row is neat */
-.case-list__item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
-}
-
-
 
