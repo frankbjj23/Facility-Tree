@@ -1,178 +1,105 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Family Case Tree</title>
+    <title>Family Case Tree – Sign In</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="./images/courthouse-logo.png" />
-    <meta
-      name="description"
-      content="Track custody cases and visualize outcomes in an ancestry-style tree."
-    />
+    <meta name="description" content="Sign in to Family Case Tree or preview the app." />
+    <style>
+      .landing { max-width: 880px; margin: 24px auto 40px; padding: 0 16px; }
+      .landing-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+      .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 16px; }
+      .card h2 { margin: 0 0 8px; font-size: 18px; color: var(--brand); display: flex; align-items: center; gap: 8px; }
+      .muted { color: var(--muted); font-size: 14px; margin-top: 4px; }
+      .auth-form .form__row { margin-bottom: 10px; }
+      .preview-points { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+      .hero-mini { display: block; width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+      @media (min-width: 920px) { .landing-grid { grid-template-columns: 1.1fr .9fr; } }
+    </style>
   </head>
   <body>
     <header class="navbar">
       <div class="container">
         <div class="brand">
-          <img
-            src="./images/courthouse-logo.png"
-            alt="Courthouse icon"
-            class="logo"
-            referrerpolicy="no-referrer"
-          />
+          <img src="./images/courthouse-logo.png" alt="Courthouse icon" class="logo" />
           <span class="brand-name">Family Case Tree</span>
         </div>
       </div>
     </header>
 
-    <section
-      class="hero"
-      role="img"
-      aria-label="Family tree themed banner background"
-    >
+    <section class="hero" role="img" aria-label="Family tree themed banner background">
       <div class="container hero__content">
         <div class="hero__title">
-          <img
-            class="section-icon"
-            src="./images/scales-of-justice.png"
-            alt="Scales of justice icon"
-            referrerpolicy="no-referrer"
-          />
-          <h1>Track Custody Cases and Outcomes</h1>
+          <img class="section-icon" src="./images/scales-of-justice.png" alt="Scales of justice icon" />
+          <h1>Welcome</h1>
         </div>
-        <p class="hero__subtitle">
-          Visualize each case through an ancestry-style decision tree.
-        </p>
+        <p class="hero__subtitle">Sign in to access your cases or preview the app first.</p>
       </div>
     </section>
 
-    <main class="container app">
-      <aside class="sidebar" aria-label="Case Manager">
-        <h2 class="sidebar__title">
-          <img
-            class="section-icon"
-            src="./images/courthouse-logo.png"
-            alt="Courthouse small icon"
-            referrerpolicy="no-referrer"
-          />
-          Case Manager
-        </h2>
-
-        <img
-          class="sidebar__hero"
-          src="./images/man-in-cell.png"
-          alt="Paper family cutouts suggesting genealogy"
-          referrerpolicy="no-referrer"
-          onerror="this.style.display='none'"
-        />
-
-        <form id="caseForm" class="form" autocomplete="off">
-          <input type="hidden" id="caseIndex" value="-1" />
-
-          <div class="form__row">
-            <label for="fullName">Full Name</label>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              placeholder="e.g., Jane Doe"
-              required
-            />
-          </div>
-
-          <div class="form__row">
-            <label for="dob">DOB</label>
-            <input id="dob" name="dob" type="date" required />
-          </div>
-
-          <div class="form__row">
-            <label for="custodyType">Custody Type</label>
-            <select id="custodyType" name="custodyType" required>
-              <option value="county">County</option>
-              <option value="state">State</option>
-              <option value="federal">Federal</option>
-            </select>
-          </div>
-
-          <div class="form__row">
-            <label for="facility">Facility</label>
-            <input
-              id="facility"
-              name="facility"
-              type="text"
-              placeholder="e.g., Bergen County Jail"
-              required
-            />
-          </div>
-
-          <div class="form__row">
-            <label for="nextCourtDate">Next Court Date</label>
-            <input id="nextCourtDate" name="nextCourtDate" type="date" />
-          </div>
-
-          <div class="form__row">
-            <label for="currentStage">Current Stage</label>
-            <select id="currentStage" name="currentStage" required></select>
-          </div>
-
-          <div class="form__actions">
-            <button id="saveCaseBtn" type="submit" class="btn btn--primary">
-              Save / Update Case
-            </button>
-            <button id="newCaseBtn" type="button" class="btn btn--secondary">
-              New
-            </button>
-            <button
-              id="deleteCaseBtn"
-              type="button"
-              class="btn btn--danger"
-              title="Delete current case"
-            >
-              Delete
-            </button>
-          </div>
-        </form>
-
-        <h3 class="sidebar__subtitle">
-          <img
-            class="section-icon"
-            src="./images/Gavel-icon.png"
-            alt="Gavel small icon"
-            referrerpolicy="no-referrer"
-          />
-          Saved Cases
-        </h3>
-
-        <ul id="caseList" class="case-list" aria-live="polite"></ul>
-      </aside>
-
-      <section class="tree-panel">
-        <div class="tree-header">
-          <h2 class="tree-header__title">
-            <img
-              class="section-icon"
-              src="./images/scales-of-justice.png"
-              alt="Justice icon"
-              referrerpolicy="no-referrer"
-            />
-            Case Tree Viewer
+    <main class="landing">
+      <div class="landing-grid">
+        <section class="card auth-form" aria-label="Sign in form">
+          <h2>
+            <img class="section-icon" src="./images/courthouse-logo.png" alt="Courthouse" />
+            Sign In
           </h2>
-          <div class="tree-controls">
-            <label class="compact-toggle"
-              ><input type="checkbox" id="compactToggle" /> Compact Tree</label
-            >
+          <div class="form__row">
+            <label for="email">Email</label>
+            <input id="email" type="email" inputmode="email" autocomplete="username" placeholder="you@example.com" />
           </div>
-          <div id="caseMeta" class="case-meta">No case loaded.</div>
-        </div>
+          <div class="form__row">
+            <label for="password">Password</label>
+            <input id="password" type="password" autocomplete="current-password" placeholder="Password (local only)" />
+          </div>
+          <div class="form__actions">
+            <button id="btnSignInMain" class="btn btn--primary">Sign In</button>
+            <button id="btnSignUpMain" class="btn btn--secondary">Sign Up</button>
+            <a href="app.html" class="btn btn--outline">Preview</a>
+          </div>
+          <p class="muted">Local-only: stores data on this device. No accounts are created on a server.</p>
+        </section>
 
-        <div id="treeScroll" class="tree-scroll">
-          <div id="treeContainer" class="tree"></div>
-        </div>
-      </section>
+        <section class="card" aria-label="Preview overview">
+          <h2>
+            <img class="section-icon" src="./images/scales-of-justice.png" alt="Justice" />
+            What you'll see in preview
+          </h2>
+          <img class="hero-mini" src="./images/man-in-cell.png" alt="Preview illustration" onerror="this.style.display='none'" />
+          <ul class="preview-points">
+            <li>Add cases: name, DOB, custody type, facility, next court date.</li>
+            <li>View an ancestry-style case flow tree with stages.</li>
+            <li>Highlight the current stage; update it any time.</li>
+            <li>Everything saves locally; sign in later to keep data per email.</li>
+          </ul>
+        </section>
+      </div>
     </main>
 
-    <script src="script.js"></script>
-    <noscript>This app requires JavaScript to function properly.</noscript>
+    <script>
+      (function(){
+        const USER_KEY = 'family-case-tree-user';
+        // Auto-forward if already signed in locally, unless forced preview
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const force = params.get('force') === '1';
+          if (localStorage.getItem(USER_KEY) && !force) {
+            window.location.href = 'app.html';
+            return;
+          }
+        } catch (e) {}
+
+        function setUserAndGo() {
+          const email = (document.getElementById('email').value || '').trim().toLowerCase();
+          if (!email) { alert('Enter an email.'); return; }
+          try { localStorage.setItem(USER_KEY, email); } catch (e) {}
+          window.location.href = 'app.html';
+        }
+        document.getElementById('btnSignInMain').addEventListener('click', setUserAndGo);
+        document.getElementById('btnSignUpMain').addEventListener('click', setUserAndGo);
+      })();
+    </script>
   </body>
-</html>
+  </html>
